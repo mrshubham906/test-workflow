@@ -1,0 +1,50 @@
+name: Deploy Django Project to EC2
+
+on:
+  push:
+    branches:
+      - main  # Adjust the branch as needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Transfer Files via SSH
+      env:
+        PEM_FILE: ${{ secrets.AWS_EC2_PEM }}
+        HOST: ${{ secrets.AWS_EC2_HOST }}
+        USER: ${{ secrets.AWS_EC2_USER }}
+      run: |
+        echo "$PEM_FILE" | base64 --decode > /tmp/test-workflow.pem
+        chmod 400 /tmp/test-workflow.pem
+        rsync -avz -e "ssh -i /tmp/test-workflow.pem" --exclude=".git/" . $USER@$HOST:/home/$USER/test-workflow
+
+    - name: SSH into EC2 and Deploy
+      env:
+        PEM_FILE: ${{ secrets.AWS_EC2_PEM }}
+        HOST: ${{ secrets.AWS_EC2_HOST }}
+        USER: ${{ secrets.AWS_EC2_USER }}
+      run: |
+        ssh -i /tmp/test-workflow.pem $USER@$HOST << 'EOF'
+        cd /home/$USER/test-workflow
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        python manage.py migrate
+        python manage.py collectstatic --noinput
+        sudo systemctl restart gunicorn
+        EOF
