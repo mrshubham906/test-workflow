@@ -30,11 +30,9 @@ jobs:
       run: |
         touch .env
         echo "${{ secrets.PROD_ENV_FILE }}" > .env
-    - name: Create Migrations
+    - name: Create Migrations and migrate
       run: |
         python manage.py makemigrations
-    - name: Migrate
-      run: |
         python manage.py migrate
     - name: Runserver
       run: |
