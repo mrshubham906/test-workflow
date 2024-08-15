@@ -17,3 +17,14 @@ class User(models.Model):
         indexes = [
             models.Index(fields=['email'])
         ]
+
+
+class UserDetail(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    age = models.IntegerField()
+
+    class Meta:
+        db_table = 'user_detail'
+        indexes = [
+            models.Index(fields=['user'])
+        ]
