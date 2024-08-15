@@ -36,8 +36,7 @@ jobs:
         python manage.py migrate
     - name: Runserver
       run: |
-        nohup python manage.py runserver 0.0.0.0:8000 &
-        ls
+        sudo systemctl restart gunicorn
         
       
         
