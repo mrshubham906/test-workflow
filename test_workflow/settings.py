@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,9 +25,14 @@ SECRET_KEY = 'django-insecure-5y*=l-eqzog+p9-3_b6$c6(!uqx(0&d(dhto#h6o$k+fv=43tg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.161.7.227', 'localhost', '34.227.96.236']
+ALLOWED_HOSTS = ['54.161.7.227', 'localhost', '34.227.96.236', '127.0.0.1']
 
-
+# --------- APPLICATION CONFIGURATIONS ----------#
+# DATABASE
+DB_HOST = config('DB_HOST')
+DB_USERNAME = config('DB_USERNAME')
+DB_PASSWORD = config('DB_PASSWORD')
+DB_NAME = config('DB_NAME')
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'test_app'
 ]
 
 MIDDLEWARE = [
@@ -73,10 +80,25 @@ WSGI_APPLICATION = 'test_workflow.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': DB_NAME,
+        'USER': DB_USERNAME,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
