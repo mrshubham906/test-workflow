@@ -2,5 +2,4 @@
 env
 db.sqlite3
 .env
-00*.py
 __pycache__
