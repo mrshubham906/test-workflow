@@ -32,6 +32,7 @@ jobs:
         echo "${{ secrets.PROD_ENV_FILE }}" > .env
     - name: Create Migrations and migrate
       run: |
+        source env/bin/activate
         python manage.py makemigrations
         python manage.py migrate
     - name: Runserver
